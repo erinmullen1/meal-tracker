@@ -9,18 +9,10 @@ import NutrientGrid from "./NutrientGrid";
 import MacroChart from "./MacroChart";
 import WeeklyTrends from "./WeeklyTrends";
 import ExercisePanel from "./ExercisePanel";
+import DateNavigator from "./DateNavigator";
 import type { ParsedMeal, ExerciseLog, DayTotals } from "@/lib/types";
+import { today, nDaysAgo, isToday, formatDateLabel } from "@/lib/date";
 import { BASE_TARGETS, type Targets } from "@/lib/scoring";
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function nDaysAgo(n: number) {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
-}
 
 function sumMeals(meals: ParsedMeal[]) {
   return meals.reduce(
@@ -52,16 +44,16 @@ function groupByDate(meals: ParsedMeal[]): DayTotals[] {
 }
 
 export default function Dashboard() {
+  const [selectedDate, setSelectedDate] = useState(today());
   const [meals, setMeals] = useState<ParsedMeal[]>([]);
   const [exercise, setExercise] = useState<ExerciseLog[]>([]);
   const [weekDays, setWeekDays] = useState<DayTotals[]>([]);
   const [targets, setTargets] = useState<Targets>(BASE_TARGETS);
 
-  const fetchToday = useCallback(async () => {
-    const t = today();
+  const fetchForDate = useCallback(async (date: string) => {
     const [mealsRes, exerciseRes] = await Promise.all([
-      fetch(`/api/meals?date=${t}`),
-      fetch(`/api/exercise?date=${t}`),
+      fetch(`/api/meals?date=${date}`),
+      fetch(`/api/exercise?date=${date}`),
     ]);
     setMeals(await mealsRes.json());
     setExercise(await exerciseRes.json());
@@ -82,13 +74,16 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    fetchToday();
+    fetchForDate(selectedDate);
+  }, [selectedDate, fetchForDate]);
+
+  useEffect(() => {
     fetchWeek();
     fetchTargets();
-  }, [fetchToday, fetchWeek, fetchTargets]);
+  }, [fetchWeek, fetchTargets]);
 
   function handleMealAdded() {
-    fetchToday();
+    fetchForDate(selectedDate);
     fetchWeek();
   }
 
@@ -98,7 +93,11 @@ export default function Dashboard() {
   }
 
   function handleExerciseLogged() {
-    fetchToday();
+    fetchForDate(selectedDate);
+  }
+
+  function handleExerciseDeleted(id: number) {
+    setExercise((prev) => prev.filter((e) => e.id !== id));
   }
 
   const totals = sumMeals(meals);
@@ -118,9 +117,16 @@ export default function Dashboard() {
           </Link>
         </header>
 
+        <DateNavigator selectedDate={selectedDate} onChange={setSelectedDate} />
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <MealInput onMealAdded={handleMealAdded} />
-          <ExercisePanel logs={exercise} onLogged={handleExerciseLogged} />
+          <MealInput date={selectedDate} onMealAdded={handleMealAdded} />
+          <ExercisePanel
+            date={selectedDate}
+            logs={exercise}
+            onLogged={handleExerciseLogged}
+            onDelete={handleExerciseDeleted}
+          />
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -136,7 +142,7 @@ export default function Dashboard() {
         {meals.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-              Today&apos;s meals
+              {isToday(selectedDate) ? "Today's meals" : `Meals — ${formatDateLabel(selectedDate)}`}
             </h2>
             <div className="space-y-3">
               {meals.map((meal) => (
@@ -149,7 +155,11 @@ export default function Dashboard() {
         {meals.length === 0 && (
           <div className="mt-12 flex flex-col items-center justify-center gap-2 text-center text-zinc-400">
             <span className="text-4xl">🥗</span>
-            <p className="text-sm">Log your first meal above to get started.</p>
+            <p className="text-sm">
+              {isToday(selectedDate)
+                ? "Log your first meal above to get started."
+                : `No meals logged for ${formatDateLabel(selectedDate)}.`}
+            </p>
           </div>
         )}
       </div>
