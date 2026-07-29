@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { addDays, formatDateLabel, isToday, today } from "@/lib/date";
 
 type Props = {
@@ -16,7 +17,7 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
         aria-label="Previous day"
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
-        ◀
+        <ChevronLeft className="h-4 w-4" />
       </button>
 
       <div className="relative flex-1 text-center">
@@ -48,7 +49,7 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
         aria-label="Next day"
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
-        ▶
+        <ChevronRight className="h-4 w-4" />
       </button>
     </div>
   );
