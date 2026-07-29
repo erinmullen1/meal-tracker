@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# playwright mcp output (console logs, page snapshots)
+.playwright-mcp/
+
 # next.js
 /.next/
 /out/
@@ -32,6 +35,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+
+# local SQLite database (personal data — meals, exercise, body stats)
+/data/
 
 # vercel
 .vercel
