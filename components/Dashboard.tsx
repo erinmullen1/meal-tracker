@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import MealInput from "./MealInput";
 import MealCard from "./MealCard";
@@ -9,6 +10,7 @@ import MacroChart from "./MacroChart";
 import WeeklyTrends from "./WeeklyTrends";
 import ExercisePanel from "./ExercisePanel";
 import type { ParsedMeal, ExerciseLog, DayTotals } from "@/lib/types";
+import { BASE_TARGETS, type Targets } from "@/lib/scoring";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -53,6 +55,7 @@ export default function Dashboard() {
   const [meals, setMeals] = useState<ParsedMeal[]>([]);
   const [exercise, setExercise] = useState<ExerciseLog[]>([]);
   const [weekDays, setWeekDays] = useState<DayTotals[]>([]);
+  const [targets, setTargets] = useState<Targets>(BASE_TARGETS);
 
   const fetchToday = useCallback(async () => {
     const t = today();
@@ -72,10 +75,17 @@ export default function Dashboard() {
     setWeekDays(groupByDate(allMeals));
   }, []);
 
+  const fetchTargets = useCallback(async () => {
+    const res = await fetch("/api/profile");
+    const data = await res.json();
+    setTargets(data.targets);
+  }, []);
+
   useEffect(() => {
     fetchToday();
     fetchWeek();
-  }, [fetchToday, fetchWeek]);
+    fetchTargets();
+  }, [fetchToday, fetchWeek, fetchTargets]);
 
   function handleMealAdded() {
     fetchToday();
@@ -96,11 +106,16 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold text-zinc-900">Meal Tracker</h1>
-          <p className="mt-1 text-sm text-zinc-400">
-            {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
-          </p>
+        <header className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-zinc-900">Meal Tracker</h1>
+            <p className="mt-1 text-sm text-zinc-400">
+              {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
+            </p>
+          </div>
+          <Link href="/profile" className="text-xs text-zinc-400 hover:text-zinc-600">
+            ⚙️ About me
+          </Link>
         </header>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -109,12 +124,12 @@ export default function Dashboard() {
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <CalorieProgress calories={totals.calories} exercise={exercise} />
+          <CalorieProgress calories={totals.calories} exercise={exercise} targets={targets} />
           <NutrientGrid totals={totals} />
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <MacroChart totals={totals} exercise={exercise} />
+          <MacroChart totals={totals} exercise={exercise} targets={targets} />
           <WeeklyTrends days={weekDays} />
         </div>
 
