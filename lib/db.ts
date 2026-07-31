@@ -47,6 +47,21 @@ function initSchema(db: Database.Database) {
       calories_burned INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS profile (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      height_cm REAL,
+      weight_kg REAL,
+      sex TEXT CHECK (sex IN ('male','female')),
+      age INTEGER,
+      activity_level TEXT CHECK (activity_level IN ('sedentary','light','moderate','active','very_active')),
+      override_calories REAL,
+      override_protein_g REAL,
+      override_carbs_g REAL,
+      override_fat_g REAL,
+      override_fiber_g REAL,
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 }
 
@@ -77,4 +92,19 @@ export type ExerciseLog = {
   intensity: "light" | "moderate" | "intense" | null;
   calories_burned: number | null;
   created_at: string;
+};
+
+export type ProfileRow = {
+  id: 1;
+  height_cm: number | null;
+  weight_kg: number | null;
+  sex: "male" | "female" | null;
+  age: number | null;
+  activity_level: "sedentary" | "light" | "moderate" | "active" | "very_active" | null;
+  override_calories: number | null;
+  override_protein_g: number | null;
+  override_carbs_g: number | null;
+  override_fat_g: number | null;
+  override_fiber_g: number | null;
+  updated_at: string;
 };

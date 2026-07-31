@@ -110,6 +110,66 @@ export const BASE_TARGETS = {
   fat_g: 65,
 };
 
+export type Sex = "male" | "female";
+export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
+export type Targets = { calories: number; protein_g: number; carbs_g: number; fat_g: number; fiber_g: number };
+
+export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9,
+};
+
+type ProfileForTargets = {
+  height_cm: number | null;
+  weight_kg: number | null;
+  sex: Sex | null;
+  age: number | null;
+  activity_level: ActivityLevel | null;
+  override_calories: number | null;
+  override_protein_g: number | null;
+  override_carbs_g: number | null;
+  override_fat_g: number | null;
+  override_fiber_g: number | null;
+};
+
+export function computeTargets(profile: ProfileForTargets | null): Targets {
+  const hasStats =
+    !!profile &&
+    profile.height_cm != null &&
+    profile.weight_kg != null &&
+    profile.sex != null &&
+    profile.age != null &&
+    profile.activity_level != null;
+
+  let computed: Targets;
+  if (hasStats && profile) {
+    const bmr =
+      profile.sex === "male"
+        ? 10 * profile.weight_kg! + 6.25 * profile.height_cm! - 5 * profile.age! + 5
+        : 10 * profile.weight_kg! + 6.25 * profile.height_cm! - 5 * profile.age! - 161;
+    const calories = Math.round(bmr * ACTIVITY_MULTIPLIERS[profile.activity_level!]);
+    const protein_g = Math.round(profile.weight_kg! * 1.6);
+    const fat_g = Math.round((calories * 0.3) / 9);
+    const fiber_g = Math.round((calories / 1000) * 14);
+    const carbs_g = Math.max(0, Math.round((calories - protein_g * 4 - fat_g * 9) / 4));
+    computed = { calories, protein_g, carbs_g, fat_g, fiber_g };
+  } else {
+    computed = { ...BASE_TARGETS };
+  }
+
+  if (!profile) return computed;
+  return {
+    calories: profile.override_calories ?? computed.calories,
+    protein_g: profile.override_protein_g ?? computed.protein_g,
+    carbs_g: profile.override_carbs_g ?? computed.carbs_g,
+    fat_g: profile.override_fat_g ?? computed.fat_g,
+    fiber_g: profile.override_fiber_g ?? computed.fiber_g,
+  };
+}
+
 export type ExerciseIntensity = "light" | "moderate" | "intense";
 
 export function getExerciseBonus(intensity: ExerciseIntensity): { calories: number; protein_g: number } {

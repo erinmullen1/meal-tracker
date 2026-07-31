@@ -7,7 +7,8 @@ config({ path: path.join(process.cwd(), ".env.local") });
 
 import { getDb } from "../lib/db";
 import { analyzeMeal } from "../lib/ai";
-import { getMealNutrientScores, scoreColourEmoji, scoreMeal, getExerciseBonus, BASE_TARGETS } from "../lib/scoring";
+import { getMealNutrientScores, scoreColourEmoji, scoreMeal, getExerciseBonus } from "../lib/scoring";
+import { getTargets } from "../lib/profile";
 import type { ExerciseLog, Meal } from "../lib/db";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -143,13 +144,14 @@ bot.command("exercise", async (ctx) => {
     `INSERT INTO exercise_logs (date, type, duration_minutes, intensity) VALUES (?, ?, ?, ?)`
   ).run(today(), type, duration ?? null, intensity);
 
+  const targets = getTargets();
   const bonus = getExerciseBonus(intensity);
   let reply = `🏃 Logged: *${type}*`;
   if (duration) reply += ` (${duration} min)`;
   reply += ` — ${intensity}\n\n`;
   reply += `📈 Targets adjusted:\n`;
-  reply += `Calories: ${BASE_TARGETS.calories} → *${BASE_TARGETS.calories + bonus.calories} kcal*\n`;
-  reply += `Protein: ${BASE_TARGETS.protein_g} → *${BASE_TARGETS.protein_g + bonus.protein_g}g*`;
+  reply += `Calories: ${targets.calories} → *${targets.calories + bonus.calories} kcal*\n`;
+  reply += `Protein: ${targets.protein_g} → *${targets.protein_g + bonus.protein_g}g*`;
 
   await ctx.reply(reply, { parse_mode: "Markdown" });
 });
@@ -160,8 +162,9 @@ bot.command("today", async (ctx) => {
   const totals = getDayTotals(t);
   const topIntensity = getTopIntensity(t);
   const bonus = topIntensity ? getExerciseBonus(topIntensity) : { calories: 0, protein_g: 0 };
-  const calorieTarget = BASE_TARGETS.calories + bonus.calories;
-  const proteinTarget = BASE_TARGETS.protein_g + bonus.protein_g;
+  const targets = getTargets();
+  const calorieTarget = targets.calories + bonus.calories;
+  const proteinTarget = targets.protein_g + bonus.protein_g;
 
   if (totals.mealCount === 0) {
     return ctx.reply(`📋 *${todayLabel()}*\n\nNo meals logged yet. Use /log to add one.`, { parse_mode: "Markdown" });
@@ -171,7 +174,7 @@ bot.command("today", async (ctx) => {
   let reply = `📋 *${todayLabel()}*\n\n`;
   reply += `🔥 Calories: ${Math.round(totals.calories)} / ${calorieTarget} kcal ${calorieBar}\n`;
   reply += `💪 Protein: ${Math.round(totals.protein_g)}g / ${proteinTarget}g\n`;
-  reply += `🌿 Fibre: ${Math.round(totals.fiber_g)}g / ${BASE_TARGETS.fiber_g}g\n`;
+  reply += `🌿 Fibre: ${Math.round(totals.fiber_g)}g / ${targets.fiber_g}g\n`;
   reply += `🍞 Carbs: ${Math.round(totals.carbs_g)}g\n`;
   reply += `🧈 Fat: ${Math.round(totals.fat_g)}g\n`;
   reply += `\n${totals.mealCount} meal${totals.mealCount !== 1 ? "s" : ""} logged`;

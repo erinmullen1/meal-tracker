@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { BASE_TARGETS, getExerciseBonus } from "@/lib/scoring";
+import { getExerciseBonus, type Targets } from "@/lib/scoring";
 import type { ExerciseLog } from "@/lib/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
@@ -21,9 +21,10 @@ type Props = {
     fiber_g: number;
   };
   exercise: ExerciseLog[];
+  targets: Targets;
 };
 
-export default function MacroChart({ totals, exercise }: Props) {
+export default function MacroChart({ totals, exercise, targets }: Props) {
   const intensities = exercise.map((e) => e.intensity).filter(Boolean) as Array<"light" | "moderate" | "intense">;
   const topIntensity = intensities.includes("intense")
     ? "intense"
@@ -34,16 +35,16 @@ export default function MacroChart({ totals, exercise }: Props) {
     : null;
   const bonus = topIntensity ? getExerciseBonus(topIntensity) : { calories: 0, protein_g: 0 };
 
-  const targets = {
-    protein_g: BASE_TARGETS.protein_g + bonus.protein_g,
-    carbs_g: BASE_TARGETS.carbs_g,
-    fat_g: BASE_TARGETS.fat_g,
-    fiber_g: BASE_TARGETS.fiber_g,
+  const effectiveTargets = {
+    protein_g: targets.protein_g + bonus.protein_g,
+    carbs_g: targets.carbs_g,
+    fat_g: targets.fat_g,
+    fiber_g: targets.fiber_g,
   };
 
   const labels = ["Protein", "Carbs", "Fat", "Fibre"];
   const values = [totals.protein_g, totals.carbs_g, totals.fat_g, totals.fiber_g];
-  const targetValues = [targets.protein_g, targets.carbs_g, targets.fat_g, targets.fiber_g];
+  const targetValues = [effectiveTargets.protein_g, effectiveTargets.carbs_g, effectiveTargets.fat_g, effectiveTargets.fiber_g];
 
   const backgroundColors = values.map((v, i) => {
     const pct = v / targetValues[i];
