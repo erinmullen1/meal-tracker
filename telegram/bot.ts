@@ -9,6 +9,7 @@ import { getDb } from "../lib/db";
 import { analyzeMeal } from "../lib/ai";
 import { getMealNutrientScores, scoreColourEmoji, scoreMeal, getExerciseBonus } from "../lib/scoring";
 import { getTargets } from "../lib/profile";
+import { today, formatDateLabel } from "../lib/date";
 import type { ExerciseLog, Meal } from "../lib/db";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -19,12 +20,8 @@ if (!token) {
 
 const bot = new Bot(token);
 
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function todayLabel(): string {
-  return new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" });
+  return formatDateLabel(today());
 }
 
 function parseMealRow(meal: Meal) {

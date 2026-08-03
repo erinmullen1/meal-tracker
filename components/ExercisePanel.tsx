@@ -2,20 +2,24 @@
 
 import { useState } from "react";
 import type { ExerciseLog } from "@/lib/types";
+import { formatDateLabel, isToday } from "@/lib/date";
 
 type Props = {
+  date: string;
   logs: ExerciseLog[];
   onLogged: () => void;
+  onDelete: (id: number) => void;
 };
 
 const INTENSITIES = ["light", "moderate", "intense"] as const;
 
-export default function ExercisePanel({ logs, onLogged }: Props) {
+export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props) {
   const [type, setType] = useState("");
   const [duration, setDuration] = useState("");
   const [intensity, setIntensity] = useState<"light" | "moderate" | "intense">("moderate");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,6 +34,7 @@ export default function ExercisePanel({ logs, onLogged }: Props) {
           type: type.trim(),
           duration_minutes: duration ? parseInt(duration) : undefined,
           intensity,
+          date,
         }),
       });
       if (!res.ok) throw new Error("Failed");
@@ -44,9 +49,24 @@ export default function ExercisePanel({ logs, onLogged }: Props) {
     }
   }
 
+  async function handleDelete(id: number) {
+    setDeletingId(id);
+    try {
+      await fetch(`/api/exercise/${id}`, { method: "DELETE" });
+      onDelete(id);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">Log exercise</h2>
+      {!isToday(date) && (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
+          Logging for {formatDateLabel(date)}
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex gap-2">
           <input
@@ -112,6 +132,20 @@ export default function ExercisePanel({ logs, onLogged }: Props) {
                     {log.intensity}
                   </span>
                 )}
+                <button
+                  onClick={() => handleDelete(log.id)}
+                  disabled={deletingId === log.id}
+                  className="text-zinc-300 hover:text-rose-400 transition-colors disabled:opacity-40"
+                  aria-label="Delete exercise log"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           ))}

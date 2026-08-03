@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { formatDateLabel, isToday } from "@/lib/date";
 
 type Props = {
+  date: string;
   onMealAdded: () => void;
 };
 
-export default function MealInput({ onMealAdded }: Props) {
+export default function MealInput({ date, onMealAdded }: Props) {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export default function MealInput({ onMealAdded }: Props) {
       const res = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: value.trim() }),
+        body: JSON.stringify({ description: value.trim(), date }),
       });
       if (!res.ok) throw new Error("Failed");
       setValue("");
@@ -37,6 +39,11 @@ export default function MealInput({ onMealAdded }: Props) {
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
         Log a meal
       </h2>
+      {!isToday(date) && (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
+          Logging for {formatDateLabel(date)}
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <textarea
           value={value}
