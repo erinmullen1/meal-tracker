@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
 import { getDb } from "@/lib/db";
 import { analyzeMeal } from "@/lib/ai";
+import { today } from "@/lib/date";
 import type { Meal } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -58,10 +59,6 @@ export async function POST(request: NextRequest) {
 
   const meal = db.prepare("SELECT * FROM meals WHERE id = ?").get(result.lastInsertRowid) as Meal;
   return Response.json(parseMeal(meal), { status: 201 });
-}
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function parseMeal(meal: Meal) {

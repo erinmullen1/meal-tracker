@@ -1,15 +1,27 @@
 import { type NextRequest } from "next/server";
 import { getDb } from "@/lib/db";
+import { today } from "@/lib/date";
 import type { ExerciseLog } from "@/lib/db";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
-  const date = request.nextUrl.searchParams.get("date") ?? today();
+  const date = request.nextUrl.searchParams.get("date");
+  const from = request.nextUrl.searchParams.get("from");
+  const to = request.nextUrl.searchParams.get("to");
   const db = getDb();
+
+  if (from && to) {
+    const logs = db
+      .prepare("SELECT * FROM exercise_logs WHERE date >= ? AND date <= ? ORDER BY date ASC, created_at ASC")
+      .all(from, to) as ExerciseLog[];
+    return Response.json(logs);
+  }
+
+  const targetDate = date ?? today();
   const logs = db
     .prepare("SELECT * FROM exercise_logs WHERE date = ? ORDER BY created_at ASC")
-    .all(date) as ExerciseLog[];
+    .all(targetDate) as ExerciseLog[];
   return Response.json(logs);
 }
 
@@ -37,8 +49,4 @@ export async function POST(request: NextRequest) {
 
   const log = db.prepare("SELECT * FROM exercise_logs WHERE id = ?").get(result.lastInsertRowid) as ExerciseLog;
   return Response.json(log, { status: 201 });
-}
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
 }

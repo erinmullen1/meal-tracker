@@ -1,12 +1,13 @@
-import { BASE_TARGETS, getExerciseBonus } from "@/lib/scoring";
+import { getExerciseBonus, type Targets } from "@/lib/scoring";
 import type { ExerciseLog } from "@/lib/types";
 
 type Props = {
   calories: number;
   exercise: ExerciseLog[];
+  targets: Targets;
 };
 
-export default function CalorieProgress({ calories, exercise }: Props) {
+export default function CalorieProgress({ calories, exercise, targets }: Props) {
   const intensities = exercise.map((e) => e.intensity).filter(Boolean) as Array<"light" | "moderate" | "intense">;
   const topIntensity = intensities.includes("intense")
     ? "intense"
@@ -17,7 +18,7 @@ export default function CalorieProgress({ calories, exercise }: Props) {
     : null;
 
   const bonus = topIntensity ? getExerciseBonus(topIntensity) : { calories: 0, protein_g: 0 };
-  const target = BASE_TARGETS.calories + bonus.calories;
+  const target = targets.calories + bonus.calories;
   const pct = Math.min((calories / target) * 100, 100);
 
   const barColour =
