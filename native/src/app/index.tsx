@@ -1,4 +1,5 @@
 import * as Device from 'expo-device';
+import { useEffect, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,6 +9,46 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { getProfile, type Targets } from '@/lib/api';
+
+type ConnectionState =
+  | { status: 'loading' }
+  | { status: 'success'; targets: Targets }
+  | { status: 'error'; message: string };
+
+function useApiConnectionCheck(): ConnectionState {
+  const [state, setState] = useState<ConnectionState>({ status: 'loading' });
+
+  useEffect(() => {
+    getProfile()
+      .then((data) => setState({ status: 'success', targets: data.targets }))
+      .catch((err) =>
+        setState({ status: 'error', message: err instanceof Error ? err.message : String(err) })
+      );
+  }, []);
+
+  return state;
+}
+
+function ConnectionCheck() {
+  const state = useApiConnectionCheck();
+
+  if (state.status === 'loading') {
+    return <ThemedText type="small">Checking backend connection…</ThemedText>;
+  }
+  if (state.status === 'error') {
+    return (
+      <ThemedText type="small">
+        ❌ Couldn&apos;t reach the API: {state.message}
+      </ThemedText>
+    );
+  }
+  return (
+    <ThemedText type="small">
+      ✅ Connected — today&apos;s calorie target is {state.targets.calories} kcal
+    </ThemedText>
+  );
+}
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -53,6 +94,10 @@ export default function HomeScreen() {
             title="Fresh start"
             hint={<ThemedText type="code">npm run reset-project</ThemedText>}
           />
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <ConnectionCheck />
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
