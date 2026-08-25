@@ -1,10 +1,11 @@
 import * as Device from 'expo-device';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
+import { LogMealForm } from '@/components/log-meal-form';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
@@ -56,10 +57,10 @@ type MealsState =
   | { status: 'success'; meals: Meal[] }
   | { status: 'error'; message: string };
 
-function useTodayMeals(): MealsState {
+function useTodayMeals() {
   const [state, setState] = useState<MealsState>({ status: 'loading' });
 
-  useEffect(() => {
+  const refetch = useCallback(() => {
     getMeals(today())
       .then((meals) => setState({ status: 'success', meals }))
       .catch((err) =>
@@ -67,12 +68,14 @@ function useTodayMeals(): MealsState {
       );
   }, []);
 
-  return state;
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { state, refetch };
 }
 
-function TodayMeals() {
-  const state = useTodayMeals();
-
+function TodayMeals({ state }: { state: MealsState }) {
   if (state.status === 'loading') {
     return <ThemedText type="small">Loading today&apos;s meals…</ThemedText>;
   }
@@ -111,6 +114,8 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const { state: mealsState, refetch: refetchMeals } = useTodayMeals();
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -142,8 +147,13 @@ export default function HomeScreen() {
         </ThemedView>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <ThemedText type="smallBold">Log a meal</ThemedText>
+          <LogMealForm onMealAdded={refetchMeals} />
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
           <ThemedText type="smallBold">Today&apos;s meals</ThemedText>
-          <TodayMeals />
+          <TodayMeals state={mealsState} />
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
