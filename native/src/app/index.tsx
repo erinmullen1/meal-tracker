@@ -8,8 +8,9 @@ import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
+import { MealRow } from '@/components/meal-row';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { getProfile, type Targets } from '@/lib/api';
+import { getMeals, getProfile, today, type Meal, type Targets } from '@/lib/api';
 
 type ConnectionState =
   | { status: 'loading' }
@@ -47,6 +48,46 @@ function ConnectionCheck() {
     <ThemedText type="small">
       ✅ Connected — today&apos;s calorie target is {state.targets.calories} kcal
     </ThemedText>
+  );
+}
+
+type MealsState =
+  | { status: 'loading' }
+  | { status: 'success'; meals: Meal[] }
+  | { status: 'error'; message: string };
+
+function useTodayMeals(): MealsState {
+  const [state, setState] = useState<MealsState>({ status: 'loading' });
+
+  useEffect(() => {
+    getMeals(today())
+      .then((meals) => setState({ status: 'success', meals }))
+      .catch((err) =>
+        setState({ status: 'error', message: err instanceof Error ? err.message : String(err) })
+      );
+  }, []);
+
+  return state;
+}
+
+function TodayMeals() {
+  const state = useTodayMeals();
+
+  if (state.status === 'loading') {
+    return <ThemedText type="small">Loading today&apos;s meals…</ThemedText>;
+  }
+  if (state.status === 'error') {
+    return <ThemedText type="small">❌ Couldn&apos;t load meals: {state.message}</ThemedText>;
+  }
+  if (state.meals.length === 0) {
+    return <ThemedText type="small">No meals logged today.</ThemedText>;
+  }
+  return (
+    <>
+      {state.meals.map((meal) => (
+        <MealRow key={meal.id} meal={meal} />
+      ))}
+    </>
   );
 }
 
@@ -98,6 +139,11 @@ export default function HomeScreen() {
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
           <ConnectionCheck />
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <ThemedText type="smallBold">Today&apos;s meals</ThemedText>
+          <TodayMeals />
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}

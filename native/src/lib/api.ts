@@ -29,3 +29,22 @@ export async function getProfile(): Promise<ProfileResponse> {
   }
   return res.json();
 }
+
+export type Meal = {
+  id: number;
+  description: string;
+  calories: number | null;
+  score: number | null;
+};
+
+export function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function getMeals(date: string): Promise<Meal[]> {
+  const res = await fetch(`${API_BASE_URL}/api/meals?date=${date}`);
+  if (!res.ok) {
+    throw new Error(`GET /api/meals failed: ${res.status}`);
+  }
+  return res.json();
+}
