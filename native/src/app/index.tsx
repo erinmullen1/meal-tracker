@@ -1,98 +1,21 @@
 import * as Device from 'expo-device';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
+import { CalorieProgress } from '@/components/calorie-progress';
+import { ExerciseRow } from '@/components/exercise-row';
 import { HintRow } from '@/components/hint-row';
+import { LogExerciseForm } from '@/components/log-exercise-form';
 import { LogMealForm } from '@/components/log-meal-form';
+import { MealRow } from '@/components/meal-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
-import { MealRow } from '@/components/meal-row';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { getMeals, getProfile, today, type Meal, type Targets } from '@/lib/api';
-
-type ConnectionState =
-  | { status: 'loading' }
-  | { status: 'success'; targets: Targets }
-  | { status: 'error'; message: string };
-
-function useApiConnectionCheck(): ConnectionState {
-  const [state, setState] = useState<ConnectionState>({ status: 'loading' });
-
-  useEffect(() => {
-    getProfile()
-      .then((data) => setState({ status: 'success', targets: data.targets }))
-      .catch((err) =>
-        setState({ status: 'error', message: err instanceof Error ? err.message : String(err) })
-      );
-  }, []);
-
-  return state;
-}
-
-function ConnectionCheck() {
-  const state = useApiConnectionCheck();
-
-  if (state.status === 'loading') {
-    return <ThemedText type="small">Checking backend connection…</ThemedText>;
-  }
-  if (state.status === 'error') {
-    return (
-      <ThemedText type="small">
-        ❌ Couldn&apos;t reach the API: {state.message}
-      </ThemedText>
-    );
-  }
-  return (
-    <ThemedText type="small">
-      ✅ Connected — today&apos;s calorie target is {state.targets.calories} kcal
-    </ThemedText>
-  );
-}
-
-type MealsState =
-  | { status: 'loading' }
-  | { status: 'success'; meals: Meal[] }
-  | { status: 'error'; message: string };
-
-function useTodayMeals() {
-  const [state, setState] = useState<MealsState>({ status: 'loading' });
-
-  const refetch = useCallback(() => {
-    getMeals(today())
-      .then((meals) => setState({ status: 'success', meals }))
-      .catch((err) =>
-        setState({ status: 'error', message: err instanceof Error ? err.message : String(err) })
-      );
-  }, []);
-
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  return { state, refetch };
-}
-
-function TodayMeals({ state }: { state: MealsState }) {
-  if (state.status === 'loading') {
-    return <ThemedText type="small">Loading today&apos;s meals…</ThemedText>;
-  }
-  if (state.status === 'error') {
-    return <ThemedText type="small">❌ Couldn&apos;t load meals: {state.message}</ThemedText>;
-  }
-  if (state.meals.length === 0) {
-    return <ThemedText type="small">No meals logged today.</ThemedText>;
-  }
-  return (
-    <>
-      {state.meals.map((meal) => (
-        <MealRow key={meal.id} meal={meal} />
-      ))}
-    </>
-  );
-}
+import { useProfileTargets } from '@/hooks/use-profile-targets';
+import { useTodayExercise } from '@/hooks/use-today-exercise';
+import { useTodayMeals } from '@/hooks/use-today-meals';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -114,11 +37,23 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const { state: targetsState } = useProfileTargets();
   const { state: mealsState, refetch: refetchMeals } = useTodayMeals();
+  const { state: exerciseState, refetch: refetchExercise } = useTodayExercise();
+
+  const totalCalories =
+    mealsState.status === 'success'
+      ? mealsState.meals.reduce((sum, m) => sum + (m.calories ?? 0), 0)
+      : 0;
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
@@ -142,9 +77,16 @@ export default function HomeScreen() {
           />
         </ThemedView>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <ConnectionCheck />
-        </ThemedView>
+        {targetsState.status === 'success' && exerciseState.status === 'success' && (
+          <ThemedView type="backgroundElement" style={styles.stepContainer}>
+            <ThemedText type="smallBold">Calories today</ThemedText>
+            <CalorieProgress
+              totalCalories={totalCalories}
+              exercise={exerciseState.logs}
+              targets={targetsState.targets}
+            />
+          </ThemedView>
+        )}
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
           <ThemedText type="smallBold">Log a meal</ThemedText>
@@ -153,10 +95,41 @@ export default function HomeScreen() {
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
           <ThemedText type="smallBold">Today&apos;s meals</ThemedText>
-          <TodayMeals state={mealsState} />
+          {mealsState.status === 'loading' && (
+            <ThemedText type="small">Loading…</ThemedText>
+          )}
+          {mealsState.status === 'error' && (
+            <ThemedText type="small">❌ {mealsState.message}</ThemedText>
+          )}
+          {mealsState.status === 'success' && mealsState.meals.length === 0 && (
+            <ThemedText type="small">No meals logged today.</ThemedText>
+          )}
+          {mealsState.status === 'success' &&
+            mealsState.meals.map((meal) => <MealRow key={meal.id} meal={meal} />)}
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <ThemedText type="smallBold">Log exercise</ThemedText>
+          <LogExerciseForm onExerciseLogged={refetchExercise} />
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <ThemedText type="smallBold">Today&apos;s exercise</ThemedText>
+          {exerciseState.status === 'loading' && (
+            <ThemedText type="small">Loading…</ThemedText>
+          )}
+          {exerciseState.status === 'error' && (
+            <ThemedText type="small">❌ {exerciseState.message}</ThemedText>
+          )}
+          {exerciseState.status === 'success' && exerciseState.logs.length === 0 && (
+            <ThemedText type="small">No exercise logged today.</ThemedText>
+          )}
+          {exerciseState.status === 'success' &&
+            exerciseState.logs.map((log) => <ExerciseRow key={log.id} log={log} />)}
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
+      </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -170,18 +143,24 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: Spacing.four,
     alignItems: 'center',
     gap: Spacing.three,
+    paddingTop: Spacing.four,
     paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
   heroSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
     gap: Spacing.four,
+    paddingVertical: Spacing.four,
   },
   title: {
     textAlign: 'center',
