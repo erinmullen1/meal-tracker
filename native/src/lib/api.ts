@@ -48,3 +48,15 @@ export async function getMeals(date: string): Promise<Meal[]> {
   }
   return res.json();
 }
+
+export async function logMeal(description: string): Promise<Meal> {
+  const res = await fetch(`${API_BASE_URL}/api/meals`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ description }),
+  });
+  if (!res.ok) {
+    throw new Error(`POST /api/meals failed: ${res.status}`);
+  }
+  return res.json();
+}
