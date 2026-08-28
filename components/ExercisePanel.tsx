@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ExerciseLog } from "@/lib/types";
 import { formatDateLabel, isToday } from "@/lib/date";
+import { strings } from "@/lib/strings";
 
 type Props = {
   date: string;
@@ -43,7 +44,7 @@ export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props)
       setIntensity("moderate");
       onLogged();
     } catch {
-      setError("Failed to log exercise.");
+      setError(strings.exercisePanel.error);
     } finally {
       setLoading(false);
     }
@@ -61,10 +62,10 @@ export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props)
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">Log exercise</h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.exercisePanel.heading}</h2>
       {!isToday(date) && (
         <p className="mb-3 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
-          Logging for {formatDateLabel(date)}
+          {strings.exercisePanel.logForDate(formatDateLabel(date))}
         </p>
       )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -72,14 +73,14 @@ export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props)
           <input
             value={type}
             onChange={(e) => setType(e.target.value)}
-            placeholder="Activity (e.g. run, gym, yoga)"
+            placeholder={strings.exercisePanel.typePlaceholder}
             disabled={loading}
             className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none disabled:opacity-50"
           />
           <input
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            placeholder="mins"
+            placeholder={strings.exercisePanel.durationPlaceholder}
             type="number"
             min={1}
             disabled={loading}
@@ -108,7 +109,7 @@ export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props)
           disabled={loading || !type.trim()}
           className="rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {loading ? "Logging…" : "Log exercise"}
+          {loading ? strings.exercisePanel.submitting : strings.exercisePanel.submit}
         </button>
       </form>
 
@@ -136,7 +137,7 @@ export default function ExercisePanel({ date, logs, onLogged, onDelete }: Props)
                   onClick={() => handleDelete(log.id)}
                   disabled={deletingId === log.id}
                   className="text-zinc-300 hover:text-rose-400 transition-colors disabled:opacity-40"
-                  aria-label="Delete exercise log"
+                  aria-label={strings.exercisePanel.deleteLabel}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path

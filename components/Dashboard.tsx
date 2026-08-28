@@ -11,6 +11,7 @@ import type { ParsedMeal, ExerciseLog } from "@/lib/types";
 import { today, isToday, formatDateLabel } from "@/lib/date";
 import { sumMeals } from "@/lib/meals";
 import { BASE_TARGETS, type Targets } from "@/lib/scoring";
+import { strings } from "@/lib/strings";
 
 export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(today());
@@ -62,7 +63,7 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-900">Meal Tracker</h1>
+        <h1 className="text-2xl font-bold text-zinc-900">{strings.dashboard.title}</h1>
         <p className="mt-1 text-sm text-zinc-400">
           {new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
         </p>
@@ -88,7 +89,9 @@ export default function Dashboard() {
       {meals.length > 0 && (
         <section className="mt-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-            {isToday(selectedDate) ? "Today's meals" : `Meals — ${formatDateLabel(selectedDate)}`}
+            {isToday(selectedDate)
+              ? strings.dashboard.todaysMeals
+              : strings.dashboard.mealsForDate(formatDateLabel(selectedDate))}
           </h2>
           <div className="space-y-3">
             {meals.map((meal) => (
@@ -103,8 +106,8 @@ export default function Dashboard() {
           <span className="text-4xl">🥗</span>
           <p className="text-sm">
             {isToday(selectedDate)
-              ? "Log your first meal above to get started."
-              : `No meals logged for ${formatDateLabel(selectedDate)}.`}
+              ? strings.dashboard.emptyToday
+              : strings.dashboard.emptyForDate(formatDateLabel(selectedDate))}
           </p>
         </div>
       )}

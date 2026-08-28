@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from './themed-text';
 
 import { Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 import { useTheme } from '@/hooks/use-theme';
 import { logExercise, type ExerciseIntensity } from '@/lib/api';
 
@@ -48,7 +49,7 @@ export function LogExerciseForm({ onExerciseLogged }: LogExerciseFormProps) {
         <TextInput
           value={type}
           onChangeText={setType}
-          placeholder="Activity (e.g. run, gym, yoga)"
+          placeholder={strings.exerciseForm.typePlaceholder}
           placeholderTextColor={theme.textSecondary}
           editable={!loading}
           style={[styles.typeInput, { color: theme.text, borderColor: theme.backgroundSelected }]}
@@ -56,7 +57,7 @@ export function LogExerciseForm({ onExerciseLogged }: LogExerciseFormProps) {
         <TextInput
           value={duration}
           onChangeText={setDuration}
-          placeholder="mins"
+          placeholder={strings.exerciseForm.durationPlaceholder}
           placeholderTextColor={theme.textSecondary}
           keyboardType="number-pad"
           editable={!loading}
@@ -105,7 +106,7 @@ export function LogExerciseForm({ onExerciseLogged }: LogExerciseFormProps) {
         ]}
       >
         <ThemedText type="smallBold" style={{ color: theme.background }}>
-          {loading ? 'Logging…' : 'Log exercise'}
+          {loading ? strings.exerciseForm.submitting : strings.exerciseForm.submit}
         </ThemedText>
       </Pressable>
     </View>

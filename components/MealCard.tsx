@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { getMealNutrientScores, scoreMeal, colourClass, colourDot } from "@/lib/scoring";
 import type { ParsedMeal } from "@/lib/types";
+import { strings } from "@/lib/strings";
 
 type Props = {
   meal: ParsedMeal;
@@ -40,7 +41,7 @@ export default function MealCard({ meal, onDelete }: Props) {
             onClick={handleDelete}
             disabled={deleting}
             className="text-zinc-300 hover:text-rose-400 transition-colors disabled:opacity-40"
-            aria-label="Delete meal"
+            aria-label={strings.mealCard.deleteLabel}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path

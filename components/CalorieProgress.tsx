@@ -1,5 +1,6 @@
 import { getExerciseBonus, type Targets } from "@/lib/scoring";
 import type { ExerciseLog } from "@/lib/types";
+import { strings } from "@/lib/strings";
 
 type Props = {
   calories: number;
@@ -31,16 +32,16 @@ export default function CalorieProgress({ calories, exercise, targets }: Props) 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">Calories today</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.calorieProgress.heading}</h2>
         {topIntensity && (
           <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">
-            🏃 +{bonus.calories} kcal from {topIntensity} workout
+            {strings.calorieProgress.workoutBonus(bonus.calories, topIntensity)}
           </span>
         )}
       </div>
       <div className="mb-1.5 flex items-end justify-between">
         <span className="text-3xl font-bold text-zinc-900">{Math.round(calories)}</span>
-        <span className="text-sm text-zinc-400">/ {target} kcal</span>
+        <span className="text-sm text-zinc-400">{strings.calorieProgress.target(target)}</span>
       </div>
       <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-100">
         <div
@@ -48,7 +49,7 @@ export default function CalorieProgress({ calories, exercise, targets }: Props) 
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="mt-1.5 text-xs text-zinc-400">{Math.round(target - calories)} kcal remaining</p>
+      <p className="mt-1.5 text-xs text-zinc-400">{strings.calorieProgress.remaining(Math.round(target - calories))}</p>
     </div>
   );
 }

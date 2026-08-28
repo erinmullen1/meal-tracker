@@ -9,6 +9,7 @@ import { MealRow } from '@/components/meal-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 import { useProfileTargets } from '@/hooks/use-profile-targets';
 import { useTodayExercise } from '@/hooks/use-today-exercise';
 import { useTodayMeals } from '@/hooks/use-today-meals';
@@ -33,13 +34,13 @@ export default function TodayScreen() {
         >
           <ThemedView style={styles.header}>
             <ThemedText type="title" style={styles.title}>
-              Today
+              {strings.today.title}
             </ThemedText>
           </ThemedView>
 
           {targetsState.status === 'success' && exerciseState.status === 'success' && (
             <ThemedView type="backgroundElement" style={styles.stepContainer}>
-              <ThemedText type="smallBold">Calories today</ThemedText>
+              <ThemedText type="smallBold">{strings.today.caloriesHeading}</ThemedText>
               <CalorieProgress
                 totalCalories={totalCalories}
                 exercise={exerciseState.logs}
@@ -49,40 +50,40 @@ export default function TodayScreen() {
           )}
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
-            <ThemedText type="smallBold">Log a meal</ThemedText>
+            <ThemedText type="smallBold">{strings.today.logMealHeading}</ThemedText>
             <LogMealForm onMealAdded={refetchMeals} />
           </ThemedView>
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
-            <ThemedText type="smallBold">Today&apos;s meals</ThemedText>
+            <ThemedText type="smallBold">{strings.today.todaysMealsHeading}</ThemedText>
             {mealsState.status === 'loading' && (
-              <ThemedText type="small">Loading…</ThemedText>
+              <ThemedText type="small">{strings.today.loading}</ThemedText>
             )}
             {mealsState.status === 'error' && (
               <ThemedText type="small">❌ {mealsState.message}</ThemedText>
             )}
             {mealsState.status === 'success' && mealsState.meals.length === 0 && (
-              <ThemedText type="small">No meals logged today.</ThemedText>
+              <ThemedText type="small">{strings.today.noMealsToday}</ThemedText>
             )}
             {mealsState.status === 'success' &&
               mealsState.meals.map((meal) => <MealRow key={meal.id} meal={meal} />)}
           </ThemedView>
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
-            <ThemedText type="smallBold">Log exercise</ThemedText>
+            <ThemedText type="smallBold">{strings.today.logExerciseHeading}</ThemedText>
             <LogExerciseForm onExerciseLogged={refetchExercise} />
           </ThemedView>
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
-            <ThemedText type="smallBold">Today&apos;s exercise</ThemedText>
+            <ThemedText type="smallBold">{strings.today.todaysExerciseHeading}</ThemedText>
             {exerciseState.status === 'loading' && (
-              <ThemedText type="small">Loading…</ThemedText>
+              <ThemedText type="small">{strings.today.loading}</ThemedText>
             )}
             {exerciseState.status === 'error' && (
               <ThemedText type="small">❌ {exerciseState.message}</ThemedText>
             )}
             {exerciseState.status === 'success' && exerciseState.logs.length === 0 && (
-              <ThemedText type="small">No exercise logged today.</ThemedText>
+              <ThemedText type="small">{strings.today.noExerciseToday}</ThemedText>
             )}
             {exerciseState.status === 'success' &&
               exerciseState.logs.map((log) => <ExerciseRow key={log.id} log={log} />)}

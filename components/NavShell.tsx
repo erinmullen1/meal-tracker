@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, TrendingUp, User, type LucideIcon } from "lucide-react";
+import { strings } from "@/lib/strings";
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/", label: "Today", icon: Home },
-  { href: "/trends", label: "Trends", icon: TrendingUp },
-  { href: "/profile", label: "About me", icon: User },
+  { href: "/", label: strings.nav.today, icon: Home },
+  { href: "/trends", label: strings.nav.trends, icon: TrendingUp },
+  { href: "/profile", label: strings.nav.aboutMe, icon: User },
 ];
 
 export default function NavShell({ children }: { children: React.ReactNode }) {
@@ -16,7 +17,7 @@ export default function NavShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-zinc-50 lg:flex">
       <aside className="hidden lg:flex lg:w-56 lg:shrink-0 lg:flex-col lg:border-r lg:border-zinc-200 lg:bg-white lg:px-4 lg:py-6">
-        <div className="mb-8 px-2 text-lg font-bold text-zinc-900">🥗 Meal Tracker</div>
+        <div className="mb-8 px-2 text-lg font-bold text-zinc-900">{strings.brand.name}</div>
         <nav className="flex flex-col gap-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;

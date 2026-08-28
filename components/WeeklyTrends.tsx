@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import type { DayTotals } from "@/lib/types";
+import { strings } from "@/lib/strings";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -18,19 +19,17 @@ type Props = {
   days: DayTotals[];
 };
 
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 export default function WeeklyTrends({ days }: Props) {
   const labels = days.map((d) => {
     const date = new Date(d.date + "T00:00:00");
-    return DAY_LABELS[date.getDay()];
+    return strings.weeklyTrends.dayLabels[date.getDay()];
   });
 
   const data = {
     labels,
     datasets: [
       {
-        label: "Calories",
+        label: strings.weeklyTrends.calories,
         data: days.map((d) => Math.round(d.calories)),
         borderColor: "rgb(99, 102, 241)",
         backgroundColor: "rgba(99, 102, 241, 0.1)",
@@ -38,7 +37,7 @@ export default function WeeklyTrends({ days }: Props) {
         yAxisID: "kcal",
       },
       {
-        label: "Protein (g)",
+        label: strings.weeklyTrends.protein,
         data: days.map((d) => Math.round(d.protein_g)),
         borderColor: "rgb(16, 185, 129)",
         backgroundColor: "rgba(16, 185, 129, 0.1)",
@@ -46,7 +45,7 @@ export default function WeeklyTrends({ days }: Props) {
         yAxisID: "grams",
       },
       {
-        label: "Fibre (g)",
+        label: strings.weeklyTrends.fiber,
         data: days.map((d) => Math.round(d.fiber_g)),
         borderColor: "rgb(245, 158, 11)",
         backgroundColor: "rgba(245, 158, 11, 0.1)",
@@ -81,10 +80,10 @@ export default function WeeklyTrends({ days }: Props) {
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">7-day trends</h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.weeklyTrends.heading}</h2>
       {days.every((d) => d.mealCount === 0) ? (
         <p className="flex h-48 items-center justify-center text-sm text-zinc-400">
-          Log meals over multiple days to see trends
+          {strings.weeklyTrends.empty}
         </p>
       ) : (
         <div className="h-48">
