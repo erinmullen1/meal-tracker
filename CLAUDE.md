@@ -85,3 +85,43 @@ export async function GET(req, { params }: { params: Promise<{ id: string }> }) 
   const { id } = await params;
 }
 ```
+
+## PR templates
+
+**Title**: prefix with which app(s) changed, then a plain-English summary of what changed.
+
+- `[Web] <summary>` — changes only under `app/`, `components/`, `lib/`, etc. (the Next.js app)
+- `[Native] <summary>` — changes only under `native/` (the Expo app)
+- `[Web + Native] <summary>` — touches both (rare — e.g. a shared-pattern change mirrored across both apps)
+- `[Docs] <summary>` — changes to repo-wide docs/config that aren't app code (e.g. this file, README)
+
+Examples: `[Native] Add exercise logging and calorie progress card`, `[Web] Add About Me profile and calendar navigation`, `[Web + Native] Centralise UI copy into strings files`, `[Docs] Add PR templates to CLAUDE.md`.
+
+**Body**: three headings, kept concise — a newcomer to the project should be able to read this and understand the change without opening the diff.
+
+```markdown
+## What changed
+- <2-4 bullets, concrete and specific — name the files/areas touched, not vague>
+
+## Why
+<1-3 sentences: the problem, request, or motivation driving this>
+
+## Impact
+- <1-3 bullets: what this enables/fixes, any user-visible behavior change, any risk/regression surface>
+```
+
+Example (filled in):
+
+```markdown
+## What changed
+- Extracted all hardcoded UI text into lib/strings.ts (web) and native/src/constants/strings.ts (native)
+- Updated every component in both apps to read from the strings file instead of inline copy
+- Mirrored keys 1:1 between the two files since the apps don't share a bundler/workspace
+
+## Why
+UI copy was scattered across ~20 components with no single source of truth, making future wording changes error-prone and slow.
+
+## Impact
+- No user-visible behavior change — pure refactor
+- Future copy edits now touch one file per app instead of hunting through components
+```
