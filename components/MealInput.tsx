@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatDateLabel, isToday } from "@/lib/date";
+import { strings } from "@/lib/strings";
 
 type Props = {
   date: string;
@@ -28,7 +29,7 @@ export default function MealInput({ date, onMealAdded }: Props) {
       setValue("");
       onMealAdded();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(strings.mealInput.error);
     } finally {
       setLoading(false);
     }
@@ -37,18 +38,18 @@ export default function MealInput({ date, onMealAdded }: Props) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        Log a meal
+        {strings.mealInput.heading}
       </h2>
       {!isToday(date) && (
         <p className="mb-3 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
-          Logging for {formatDateLabel(date)}
+          {strings.mealInput.logForDate(formatDateLabel(date))}
         </p>
       )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="e.g. 2 scrambled eggs on sourdough toast with avocado and a latte"
+          placeholder={strings.mealInput.placeholder}
           rows={3}
           disabled={loading}
           className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none disabled:opacity-50"
@@ -59,7 +60,7 @@ export default function MealInput({ date, onMealAdded }: Props) {
           disabled={loading || !value.trim()}
           className="self-end rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {loading ? "Analysing…" : "Log meal"}
+          {loading ? strings.mealInput.submitting : strings.mealInput.submit}
         </button>
       </form>
     </div>

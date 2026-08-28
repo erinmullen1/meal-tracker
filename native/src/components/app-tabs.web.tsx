@@ -12,6 +12,7 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 
 export default function AppTabs() {
   return (
@@ -20,13 +21,13 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="today" href="/" asChild>
-            <TabButton>Today</TabButton>
+            <TabButton>{strings.nav.today}</TabButton>
           </TabTrigger>
           <TabTrigger name="trends" href="/trends" asChild>
-            <TabButton>Trends</TabButton>
+            <TabButton>{strings.nav.trends}</TabButton>
           </TabTrigger>
           <TabTrigger name="about" href="/about" asChild>
-            <TabButton>About me</TabButton>
+            <TabButton>{strings.nav.aboutMe}</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
@@ -53,7 +54,7 @@ export function CustomTabList(props: TabListProps) {
     <View {...props} style={styles.tabListContainer}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
         <ThemedText type="smallBold" style={styles.brandText}>
-          🥗 Meal Tracker
+          {strings.brand.name}
         </ThemedText>
 
         {props.children}

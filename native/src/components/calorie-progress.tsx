@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { ThemedText } from './themed-text';
 
 import { Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 import { useTheme } from '@/hooks/use-theme';
 import { getTopExerciseBonus, type ExerciseLog, type Targets } from '@/lib/api';
 
@@ -25,15 +26,15 @@ export function CalorieProgress({ totalCalories, exercise, targets }: CaloriePro
       <View style={styles.numbers}>
         <ThemedText type="subtitle">{Math.round(totalCalories)}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          / {target} kcal
+          {strings.calorieProgress.target(target)}
         </ThemedText>
       </View>
       <View style={[styles.track, { backgroundColor: theme.backgroundSelected }]}>
         <View style={[styles.fill, { width: `${pct}%`, backgroundColor: barColor }]} />
       </View>
       <ThemedText type="small" themeColor="textSecondary">
-        {Math.round(target - totalCalories)} kcal remaining
-        {bonus.calories > 0 ? ` (includes +${bonus.calories} kcal from exercise)` : ''}
+        {strings.calorieProgress.remaining(Math.round(target - totalCalories))}
+        {bonus.calories > 0 ? strings.calorieProgress.exerciseBonus(bonus.calories) : ''}
       </ThemedText>
     </View>
   );

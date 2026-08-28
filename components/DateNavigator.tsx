@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { addDays, formatDateLabel, isToday, today } from "@/lib/date";
+import { strings } from "@/lib/strings";
 
 type Props = {
   selectedDate: string;
@@ -14,7 +15,7 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
       <button
         type="button"
         onClick={() => onChange(addDays(selectedDate, -1))}
-        aria-label="Previous day"
+        aria-label={strings.dateNavigator.previousDay}
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -22,14 +23,14 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
 
       <div className="relative flex-1 text-center">
         <span className="text-sm font-medium text-zinc-700">
-          {isToday(selectedDate) ? "Today" : formatDateLabel(selectedDate)}
+          {isToday(selectedDate) ? strings.dateNavigator.today : formatDateLabel(selectedDate)}
         </span>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => e.target.value && onChange(e.target.value)}
           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-          aria-label="Jump to date"
+          aria-label={strings.dateNavigator.jumpToDate}
         />
       </div>
 
@@ -39,14 +40,14 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
           onClick={() => onChange(today())}
           className="rounded-xl bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-200"
         >
-          Today
+          {strings.dateNavigator.today}
         </button>
       )}
 
       <button
         type="button"
         onClick={() => onChange(addDays(selectedDate, 1))}
-        aria-label="Next day"
+        aria-label={strings.dateNavigator.nextDay}
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
         <ChevronRight className="h-4 w-4" />

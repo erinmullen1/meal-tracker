@@ -3,21 +3,22 @@
 import { useEffect, useState } from "react";
 import type { ProfileRow } from "@/lib/db";
 import type { ActivityLevel, Sex, Targets } from "@/lib/scoring";
+import { strings } from "@/lib/strings";
 
 const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
-  { value: "sedentary", label: "Sedentary (little to no exercise)" },
-  { value: "light", label: "Lightly active (1-3 days/week)" },
-  { value: "moderate", label: "Moderately active (3-5 days/week)" },
-  { value: "active", label: "Active (6-7 days/week)" },
-  { value: "very_active", label: "Very active (hard exercise daily)" },
+  { value: "sedentary", label: strings.profileForm.activityOptions.sedentary },
+  { value: "light", label: strings.profileForm.activityOptions.light },
+  { value: "moderate", label: strings.profileForm.activityOptions.moderate },
+  { value: "active", label: strings.profileForm.activityOptions.active },
+  { value: "very_active", label: strings.profileForm.activityOptions.very_active },
 ];
 
 const TARGET_FIELDS: { key: keyof Targets; overrideKey: keyof ProfileRow; label: string; unit: string }[] = [
-  { key: "calories", overrideKey: "override_calories", label: "Calories", unit: "kcal" },
-  { key: "protein_g", overrideKey: "override_protein_g", label: "Protein", unit: "g" },
-  { key: "carbs_g", overrideKey: "override_carbs_g", label: "Carbs", unit: "g" },
-  { key: "fat_g", overrideKey: "override_fat_g", label: "Fat", unit: "g" },
-  { key: "fiber_g", overrideKey: "override_fiber_g", label: "Fibre", unit: "g" },
+  { key: "calories", overrideKey: "override_calories", label: strings.profileForm.labels.calories, unit: "kcal" },
+  { key: "protein_g", overrideKey: "override_protein_g", label: strings.profileForm.labels.protein, unit: "g" },
+  { key: "carbs_g", overrideKey: "override_carbs_g", label: strings.profileForm.labels.carbs, unit: "g" },
+  { key: "fat_g", overrideKey: "override_fat_g", label: strings.profileForm.labels.fat, unit: "g" },
+  { key: "fiber_g", overrideKey: "override_fiber_g", label: strings.profileForm.labels.fiber, unit: "g" },
 ];
 
 type FormState = {
@@ -107,29 +108,29 @@ export default function ProfileForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Failed to save.");
+        setError(data.error ?? strings.profileForm.saveError);
         return;
       }
       setForm(profileToForm(data.profile));
       setTargets(data.targets);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(strings.profileForm.genericError);
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <p className="text-sm text-zinc-400">Loading…</p>;
+    return <p className="text-sm text-zinc-400">{strings.profileForm.loading}</p>;
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">Body stats</h2>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.profileForm.bodyStats}</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
-            Height (cm)
+            {strings.profileForm.height}
             <input
               type="number"
               min={50}
@@ -140,7 +141,7 @@ export default function ProfileForm() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
-            Weight (kg)
+            {strings.profileForm.weight}
             <input
               type="number"
               min={20}
@@ -151,19 +152,19 @@ export default function ProfileForm() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
-            Sex
+            {strings.profileForm.sex}
             <select
               value={form.sex}
               onChange={(e) => update("sex", e.target.value as Sex)}
               className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
             >
-              <option value="">—</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option value="">{strings.profileForm.sexPlaceholder}</option>
+              <option value="male">{strings.profileForm.male}</option>
+              <option value="female">{strings.profileForm.female}</option>
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
-            Age
+            {strings.profileForm.age}
             <input
               type="number"
               min={1}
@@ -174,13 +175,13 @@ export default function ProfileForm() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600 sm:col-span-2">
-            Activity level
+            {strings.profileForm.activityLevel}
             <select
               value={form.activity_level}
               onChange={(e) => update("activity_level", e.target.value as ActivityLevel)}
               className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
             >
-              <option value="">—</option>
+              <option value="">{strings.profileForm.sexPlaceholder}</option>
               {ACTIVITY_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -193,7 +194,7 @@ export default function ProfileForm() {
 
       <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-          Targets {targets && <span className="normal-case text-zinc-300">(computed from your stats)</span>}
+          {strings.profileForm.targets} {targets && <span className="normal-case text-zinc-300">{strings.profileForm.computedNote}</span>}
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {TARGET_FIELDS.map((field) => (
@@ -214,7 +215,7 @@ export default function ProfileForm() {
                     onClick={() => update(field.overrideKey as keyof FormState, "")}
                     className="text-xs text-zinc-400 hover:text-zinc-600"
                   >
-                    Reset
+                    {strings.profileForm.reset}
                   </button>
                 )}
               </div>
@@ -222,7 +223,7 @@ export default function ProfileForm() {
           ))}
         </div>
         <p className="mt-3 text-xs text-zinc-400">
-          Leave a field blank to use the computed value. Enter a number to override it.
+          {strings.profileForm.overrideNote}
         </p>
       </div>
 
@@ -233,7 +234,7 @@ export default function ProfileForm() {
         disabled={saving}
         className="self-start rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {saving ? "Saving…" : "Save"}
+        {saving ? strings.profileForm.saving : strings.profileForm.save}
       </button>
     </form>
   );

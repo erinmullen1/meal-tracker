@@ -7,6 +7,7 @@ import type { ParsedMeal, ExerciseLog, DayTotals } from "@/lib/types";
 import { today, nDaysAgo } from "@/lib/date";
 import { sumMeals, groupByDate } from "@/lib/meals";
 import { BASE_TARGETS, type Targets } from "@/lib/scoring";
+import { strings } from "@/lib/strings";
 
 export default function TrendsView() {
   const [meals, setMeals] = useState<ParsedMeal[]>([]);
@@ -49,8 +50,8 @@ export default function TrendsView() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-900">Trends</h1>
-        <p className="mt-1 text-sm text-zinc-400">Today's macros vs. target, and your last 7 days.</p>
+        <h1 className="text-2xl font-bold text-zinc-900">{strings.trendsView.title}</h1>
+        <p className="mt-1 text-sm text-zinc-400">{strings.trendsView.subtitle}</p>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">

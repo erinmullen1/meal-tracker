@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from './themed-text';
 
 import { Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 import { useTheme } from '@/hooks/use-theme';
 import { logMeal } from '@/lib/api';
 
@@ -37,7 +38,7 @@ export function LogMealForm({ onMealAdded }: LogMealFormProps) {
       <TextInput
         value={value}
         onChangeText={setValue}
-        placeholder="e.g. 2 scrambled eggs on sourdough with avocado"
+        placeholder={strings.mealForm.placeholder}
         placeholderTextColor={theme.textSecondary}
         editable={!loading}
         multiline
@@ -57,7 +58,7 @@ export function LogMealForm({ onMealAdded }: LogMealFormProps) {
         ]}
       >
         <ThemedText type="smallBold" style={{ color: theme.background }}>
-          {loading ? 'Analysing…' : 'Log meal'}
+          {loading ? strings.mealForm.submitting : strings.mealForm.submit}
         </ThemedText>
       </Pressable>
     </View>

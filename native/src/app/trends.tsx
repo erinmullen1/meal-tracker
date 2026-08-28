@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 
 export default function TrendsScreen() {
   return (
@@ -15,12 +16,12 @@ export default function TrendsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <ThemedView style={styles.header}>
-            <ThemedText type="title">Trends</ThemedText>
+            <ThemedText type="title">{strings.trends.title}</ThemedText>
           </ThemedView>
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
             <ThemedText type="small">
-              Macro and 7-day charts are coming in the next update.
+              {strings.trends.placeholder}
             </ThemedText>
           </ThemedView>
         </ScrollView>

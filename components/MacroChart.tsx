@@ -10,6 +10,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import { getExerciseBonus, type Targets } from "@/lib/scoring";
 import type { ExerciseLog } from "@/lib/types";
+import { strings } from "@/lib/strings";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
@@ -42,7 +43,12 @@ export default function MacroChart({ totals, exercise, targets }: Props) {
     fiber_g: targets.fiber_g,
   };
 
-  const labels = ["Protein", "Carbs", "Fat", "Fibre"];
+  const labels = [
+    strings.macroChart.labels.protein,
+    strings.macroChart.labels.carbs,
+    strings.macroChart.labels.fat,
+    strings.macroChart.labels.fiber,
+  ];
   const values = [totals.protein_g, totals.carbs_g, totals.fat_g, totals.fiber_g];
   const targetValues = [effectiveTargets.protein_g, effectiveTargets.carbs_g, effectiveTargets.fat_g, effectiveTargets.fiber_g];
 
@@ -57,14 +63,14 @@ export default function MacroChart({ totals, exercise, targets }: Props) {
     labels,
     datasets: [
       {
-        label: "Consumed",
+        label: strings.macroChart.consumed,
         data: values,
         backgroundColor: backgroundColors,
         borderRadius: 6,
         maxBarThickness: 40,
       },
       {
-        label: "Target",
+        label: strings.macroChart.target,
         data: targetValues,
         backgroundColor: "rgba(0,0,0,0.06)",
         borderRadius: 6,
@@ -93,7 +99,7 @@ export default function MacroChart({ totals, exercise, targets }: Props) {
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">Macros vs target</h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.macroChart.heading}</h2>
       <div className="h-48">
         <Bar data={data} options={options} />
       </div>

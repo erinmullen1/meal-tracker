@@ -4,14 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { strings } from '@/constants/strings';
 import { useProfileTargets } from '@/hooks/use-profile-targets';
 
 const TARGET_ROWS: { key: 'calories' | 'protein_g' | 'carbs_g' | 'fat_g' | 'fiber_g'; label: string; unit: string }[] = [
-  { key: 'calories', label: 'Calories', unit: 'kcal' },
-  { key: 'protein_g', label: 'Protein', unit: 'g' },
-  { key: 'carbs_g', label: 'Carbs', unit: 'g' },
-  { key: 'fat_g', label: 'Fat', unit: 'g' },
-  { key: 'fiber_g', label: 'Fibre', unit: 'g' },
+  { key: 'calories', label: strings.about.labels.calories, unit: 'kcal' },
+  { key: 'protein_g', label: strings.about.labels.protein, unit: 'g' },
+  { key: 'carbs_g', label: strings.about.labels.carbs, unit: 'g' },
+  { key: 'fat_g', label: strings.about.labels.fat, unit: 'g' },
+  { key: 'fiber_g', label: strings.about.labels.fiber, unit: 'g' },
 ];
 
 export default function AboutScreen() {
@@ -26,15 +27,15 @@ export default function AboutScreen() {
           showsVerticalScrollIndicator={false}
         >
           <ThemedView style={styles.header}>
-            <ThemedText type="title">About me</ThemedText>
+            <ThemedText type="title">{strings.about.title}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Your targets, from the profile set up on the web app.
+              {strings.about.subtitle}
             </ThemedText>
           </ThemedView>
 
           <ThemedView type="backgroundElement" style={styles.stepContainer}>
-            <ThemedText type="smallBold">Targets</ThemedText>
-            {state.status === 'loading' && <ThemedText type="small">Loading…</ThemedText>}
+            <ThemedText type="smallBold">{strings.about.targetsHeading}</ThemedText>
+            {state.status === 'loading' && <ThemedText type="small">{strings.about.loading}</ThemedText>}
             {state.status === 'error' && (
               <ThemedText type="small">❌ {state.message}</ThemedText>
             )}

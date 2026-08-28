@@ -1,4 +1,5 @@
 import { getMealNutrientScores, colourClass } from "@/lib/scoring";
+import { strings } from "@/lib/strings";
 
 type Props = {
   totals: {
@@ -26,7 +27,7 @@ export default function NutrientGrid({ totals }: Props) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        Today&apos;s nutrients
+        {strings.nutrientGrid.heading}
       </h2>
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
         {scores.map((s) => (
