@@ -137,7 +137,7 @@ export default function ProfileForm() {
               max={250}
               value={form.height_cm}
               onChange={(e) => update("height_cm", e.target.value)}
-              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
@@ -148,7 +148,7 @@ export default function ProfileForm() {
               max={300}
               value={form.weight_kg}
               onChange={(e) => update("weight_kg", e.target.value)}
-              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600">
@@ -156,7 +156,7 @@ export default function ProfileForm() {
             <select
               value={form.sex}
               onChange={(e) => update("sex", e.target.value as Sex)}
-              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
             >
               <option value="">{strings.profileForm.sexPlaceholder}</option>
               <option value="male">{strings.profileForm.male}</option>
@@ -171,7 +171,7 @@ export default function ProfileForm() {
               max={120}
               value={form.age}
               onChange={(e) => update("age", e.target.value)}
-              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-zinc-600 sm:col-span-2">
@@ -179,7 +179,7 @@ export default function ProfileForm() {
             <select
               value={form.activity_level}
               onChange={(e) => update("activity_level", e.target.value as ActivityLevel)}
-              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
             >
               <option value="">{strings.profileForm.sexPlaceholder}</option>
               {ACTIVITY_OPTIONS.map((opt) => (
@@ -207,11 +207,12 @@ export default function ProfileForm() {
                   placeholder={targets ? String(targets[field.key]) : ""}
                   value={form[field.overrideKey as keyof FormState] as string}
                   onChange={(e) => update(field.overrideKey as keyof FormState, e.target.value)}
-                  className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none"
+                  className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
                 />
                 {form[field.overrideKey as keyof FormState] && (
                   <button
                     type="button"
+                    aria-label={strings.profileForm.resetField(field.label)}
                     onClick={() => update(field.overrideKey as keyof FormState, "")}
                     className="text-xs text-zinc-400 hover:text-zinc-600"
                   >
@@ -227,7 +228,11 @@ export default function ProfileForm() {
         </p>
       </div>
 
-      {error && <p className="text-xs text-rose-500">{error}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-rose-500">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"

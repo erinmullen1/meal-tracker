@@ -86,9 +86,19 @@ export default function WeeklyTrends({ days }: Props) {
           {strings.weeklyTrends.empty}
         </p>
       ) : (
-        <div className="h-48">
-          <Line data={data} options={options} />
-        </div>
+        <>
+          <p className="sr-only">
+            {labels
+              .map(
+                (label, i) =>
+                  `${label}: ${Math.round(days[i].calories)} kcal, ${Math.round(days[i].protein_g)}g protein, ${Math.round(days[i].fiber_g)}g fibre.`
+              )
+              .join(" ")}
+          </p>
+          <div aria-hidden="true" className="h-48">
+            <Line data={data} options={options} />
+          </div>
+        </>
       )}
     </div>
   );

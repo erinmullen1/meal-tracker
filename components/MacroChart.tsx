@@ -100,7 +100,10 @@ export default function MacroChart({ totals, exercise, targets }: Props) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">{strings.macroChart.heading}</h2>
-      <div className="h-48">
+      <p className="sr-only">
+        {labels.map((label, i) => `${label}: ${Math.round(values[i])}g of ${Math.round(targetValues[i])}g target.`).join(" ")}
+      </p>
+      <div aria-hidden="true" className="h-48">
         <Bar data={data} options={options} />
       </div>
     </div>

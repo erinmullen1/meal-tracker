@@ -43,7 +43,14 @@ export default function CalorieProgress({ calories, exercise, targets }: Props) 
         <span className="text-3xl font-bold text-zinc-900">{Math.round(calories)}</span>
         <span className="text-sm text-zinc-400">{strings.calorieProgress.target(target)}</span>
       </div>
-      <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-100">
+      <div
+        role="progressbar"
+        aria-label={strings.calorieProgress.heading}
+        aria-valuemin={0}
+        aria-valuemax={target}
+        aria-valuenow={Math.round(calories)}
+        className="h-3 w-full overflow-hidden rounded-full bg-zinc-100"
+      >
         <div
           className={`h-full rounded-full transition-all duration-500 ${barColour}`}
           style={{ width: `${pct}%` }}

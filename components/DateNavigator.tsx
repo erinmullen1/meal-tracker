@@ -18,7 +18,7 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
         aria-label={strings.dateNavigator.previousDay}
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft aria-hidden="true" className="h-4 w-4" />
       </button>
 
       <div className="relative flex-1 text-center">
@@ -50,7 +50,7 @@ export default function DateNavigator({ selectedDate, onChange }: Props) {
         aria-label={strings.dateNavigator.nextDay}
         className="rounded-xl px-3 py-1.5 text-zinc-500 hover:bg-zinc-100"
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </button>
     </div>
   );

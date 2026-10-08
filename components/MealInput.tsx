@@ -37,7 +37,7 @@ export default function MealInput({ date, onMealAdded }: Props) {
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
+      <h2 id="meal-input-heading" className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
         {strings.mealInput.heading}
       </h2>
       {!isToday(date) && (
@@ -47,14 +47,19 @@ export default function MealInput({ date, onMealAdded }: Props) {
       )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <textarea
+          aria-labelledby="meal-input-heading"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={strings.mealInput.placeholder}
           rows={3}
           disabled={loading}
-          className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none disabled:opacity-50"
+          className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20 disabled:opacity-50"
         />
-        {error && <p className="text-xs text-rose-500">{error}</p>}
+        {error && (
+          <p role="alert" className="text-xs text-rose-500">
+            {error}
+          </p>
+        )}
         <button
           type="submit"
           disabled={loading || !value.trim()}

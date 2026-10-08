@@ -9,6 +9,7 @@ export const strings = {
     today: "Today",
     trends: "Trends",
     aboutMe: "About me",
+    primaryLabel: "Primary",
   },
   dashboard: {
     title: "Meal Tracker",
@@ -39,6 +40,7 @@ export const strings = {
     submitting: "Logging…",
     error: "Failed to log exercise.",
     deleteLabel: "Delete exercise log",
+    intensityLabel: "Intensity",
     logForDate: (date: string) => `Logging for ${date}`,
   },
   mealCard: {
@@ -88,6 +90,7 @@ export const strings = {
     computedNote: "(computed from your stats)",
     overrideNote: "Leave a field blank to use the computed value. Enter a number to override it.",
     reset: "Reset",
+    resetField: (label: string) => `Reset ${label}`,
     save: "Save",
     saving: "Saving…",
     loading: "Loading…",
